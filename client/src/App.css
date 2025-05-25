@@ -1,0 +1,22 @@
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+input, textarea {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+button {
+  background: #007bff;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  cursor: pointer;
+}
+.sigCanvas {
+  border: 1px solid #000;
+  margin-bottom: 1rem;
+}
