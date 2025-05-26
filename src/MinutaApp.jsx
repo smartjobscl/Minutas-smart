@@ -84,7 +84,7 @@ export default function MinutaApp() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <p className="font-semibold mb-1">Firma Técnico:</p>
-          <SignatureCanvas ref={firmaTecnicoRef} penColor="black" canvasProps={{ className: "border w-30% h-100
+          <SignatureCanvas ref={firmaTecnicoRef} penColor="black" canvasProps={{ className: "border w-30% h-32
     rounded" }} />
         </div>
         <div>
