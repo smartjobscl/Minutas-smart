@@ -124,51 +124,50 @@ function App() {
         />
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-          <div>
-            <p><strong>Firma Técnico:</strong></p>
-            <SignatureCanvas
-              ref={firmaTecnicoRef}
-              penColor="black"
-              canvasProps={{
-                width: 200,
-                height: 100,
-                className: "sigCanvas",
-                style: { border: "1px solid #000" },
-              }}
-            />
-          </div>
+  <div>
+    <p><strong>Firma Técnico:</strong></p>
+    <SignatureCanvas
+      ref={firmaTecnicoRef}
+      penColor="black"
+      canvasProps={{
+        width: 200,
+        height: 100,
+        className: "sigCanvas",
+        style: { border: "1px solid #000" },
+      }}
+    />
+  </div>
 
-        <div>
-  <p><strong>Firma de jefe de tienda o responsable:</strong></p>
-  <SignatureCanvas
-    ref={firmaClienteRef}
-    penColor="black"
-    canvasProps={{
-      width: 200,
-      height: 100,
-      className: "sigCanvas",
-      style: { border: "1px solid #000" },
-    }}
-  />
-  {/* Botón para limpiar la firma */}
-  <button
-    type="button"
-    onClick={() => firmaClienteRef.current.clear()}
-    style={{
-      marginTop: "10px",
-      background: "#4285f4",
-      color: "#fff",
-      border: "none",
-      padding: "7px 18px",
-      borderRadius: "8px",
-      fontWeight: "bold",
-      cursor: "pointer"
-    }}
-  >
-    Limpiar firma
-  </button>
+  <div>
+    <p><strong>Firma de jefe de tienda o responsable:</strong></p>
+    <SignatureCanvas
+      ref={firmaClienteRef}
+      penColor="black"
+      canvasProps={{
+        width: 200,
+        height: 100,
+        className: "sigCanvas",
+        style: { border: "1px solid #000" },
+      }}
+    />
+    <button
+      type="button"
+      onClick={() => firmaClienteRef.current.clear()}
+      style={{
+        marginTop: "10px",
+        background: "#4285f4",
+        color: "#fff",
+        border: "none",
+        padding: "7px 18px",
+        borderRadius: "8px",
+        fontWeight: "bold",
+        cursor: "pointer"
+      }}
+    >
+      Limpiar firma
+    </button>
+  </div>
 </div>
-        </div>
 
         <button
           onClick={generarPDF}
