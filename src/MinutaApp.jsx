@@ -88,7 +88,14 @@ export default function MinutaApp() {
         </div>
         <div>
           <p className="font-semibold mb-1">Firma Cliente:</p>
-          <SignatureCanvas ref={firmaClienteRef} penColor="black" canvasProps={{ className: "border w-30% h-32 rounded" }} />
+          <SignatureCanvas ref={firmaClienteRef} penColor="black" canvasProps={{ className: "border w-30% h-32 rounded" }} /> {/* Botón para limpiar solo la firma del cliente */}
+    <button
+      type="button"
+      onClick={() => firmaClienteRef.current.clear()}
+      className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
+    >
+      Limpiar firma
+    </button>
         </div>
       </div>
 
