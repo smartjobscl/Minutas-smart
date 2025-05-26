@@ -1,3 +1,7 @@
+node_modules/
+*.json
+*.key
+*.pem
 uploader-minutas.json
 uploader-minutas (2).json
 uploader-minutas.json
