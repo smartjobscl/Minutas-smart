@@ -4,24 +4,24 @@ const path = require('path');
 const uploadToDriveRouter = require('./uploadToDrive');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// API
+// API routes
 app.use('/uploadToDrive', uploadToDriveRouter);
 
-// Servir React en producción
+// 🟢 Servir frontend (React build)
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-// Fallback para rutas desconocidas (React)
+// Redirigir todo lo demás a index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
 
-// Iniciar servidor
+// Puerto para Railway
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado en http://localhost:${PORT}`);
 });
