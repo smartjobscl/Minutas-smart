@@ -130,7 +130,7 @@ function App() {
               ref={firmaTecnicoRef}
               penColor="black"
               canvasProps={{
-                width: 250,
+                width: 200,
                 height: 100,
                 className: "sigCanvas",
                 style: { border: "1px solid #000" },
