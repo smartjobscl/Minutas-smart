@@ -2,6 +2,32 @@ import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import jsPDF from "jspdf";
 
+// === Helper para achicar imágenes ===
+function resizeImage(file, maxWidth = 600, quality = 0.7) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function App() {
   const [sede, setSede] = useState("");
   const [tecnico, setTecnico] = useState("");
@@ -19,15 +45,13 @@ function App() {
   const generarPDF = async () => {
     const doc = new jsPDF();
 
-    // Fecha automática (formato DD-MM-YYYY)
+    // Fecha automática
     const fechaActual = new Date();
-    const fechaTexto = `${fechaActual.getDate().toString().padStart(2, '0')}-${(fechaActual.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${fechaActual.getFullYear()}`;
+    const fechaTexto = `${fechaActual.getDate().toString().padStart(2, '0')}-${(fechaActual.getMonth() + 1).toString().padStart(2, '0')}-${fechaActual.getFullYear()}`;
 
-    // Agregar logo (con timeout por si no carga)
-    const logo = new Image();
-    logo.src = process.env.PUBLIC_URL + "/logo.jpg";
+    // Logo (si tienes uno)
+    const logo = new window.Image();
+    logo.src = process.env.PUBLIC_URL + "/logo.jpg"; // Cambia la ruta si tu logo es PNG
     await Promise.race([
       new Promise((resolve) => {
         logo.onload = () => {
@@ -42,7 +66,7 @@ function App() {
     doc.text("MINUTA DE TRABAJO", 70, 20);
 
     doc.setFontSize(10);
-    doc.text(`Fecha: ${fechaTexto}`, 150, 20); // Fecha arriba a la derecha
+    doc.text(`Fecha: ${fechaTexto}`, 150, 20);
 
     doc.setFontSize(12);
     doc.text(`Sede: ${sede}`, 20, 40);
@@ -52,18 +76,21 @@ function App() {
     const descripcionLimpia = doc.splitTextToSize(descripcion, 170);
     doc.text(descripcionLimpia, 20, 70);
 
+    // === Aquí empieza el manejo de imágenes ===
     let yOffset = 80 + descripcionLimpia.length * 6;
+    let fotosPorPagina = 3; // Cambia este número si quieres más o menos por página
+    let fotosEnPagina = 0;
 
     for (const img of imagenes) {
-      const reader = new FileReader();
-      await new Promise((resolve) => {
-        reader.onload = (e) => {
-          doc.addImage(e.target.result, "JPEG", 20, yOffset, 100, 75);
-          yOffset += 80;
-          resolve();
-        };
-        reader.readAsDataURL(img);
-      });
+      const resizedDataUrl = await resizeImage(img, 600, 0.7);
+      doc.addImage(resizedDataUrl, "JPEG", 20, yOffset, 100, 75);
+      yOffset += 80;
+      fotosEnPagina += 1;
+      if (fotosEnPagina >= fotosPorPagina) {
+        doc.addPage();
+        yOffset = 20;
+        fotosEnPagina = 0;
+      }
     }
 
     const firmaTecnico = firmaTecnicoRef.current.getCanvas().toDataURL("image/png");
@@ -76,7 +103,7 @@ function App() {
 
     doc.save(`Minuta_${sede}.pdf`);
 
-    // Abrir Gmail (solo una vez)
+    // Abrir Gmail
     const para = encodeURIComponent(`made.l@smartjobscl.com${correoJefe ? "," + correoJefe : ""}`);
     const asunto = encodeURIComponent(`Minuta de trabajo - ${sede}`);
     const cuerpo = encodeURIComponent(`Sede: ${sede}\nTécnico: ${tecnico}`);
@@ -124,50 +151,34 @@ function App() {
         />
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-  <div>
-    <p><strong>Firma Técnico:</strong></p>
-    <SignatureCanvas
-      ref={firmaTecnicoRef}
-      penColor="black"
-      canvasProps={{
-        width: 200,
-        height: 100,
-        className: "sigCanvas",
-        style: { border: "1px solid #000" },
-      }}
-    />
-  </div>
+          <div>
+            <p><strong>Firma Técnico:</strong></p>
+            <SignatureCanvas
+              ref={firmaTecnicoRef}
+              penColor="black"
+              canvasProps={{
+                width: 250,
+                height: 100,
+                className: "sigCanvas",
+                style: { border: "1px solid #000" },
+              }}
+            />
+          </div>
 
-  <div>
-    <p><strong>Firma de jefe de tienda o responsable:</strong></p>
-    <SignatureCanvas
-      ref={firmaClienteRef}
-      penColor="black"
-      canvasProps={{
-        width: 200,
-        height: 100,
-        className: "sigCanvas",
-        style: { border: "1px solid #000" },
-      }}
-    />
-    <button
-      type="button"
-      onClick={() => firmaClienteRef.current.clear()}
-      style={{
-        marginTop: "10px",
-        background: "#4285f4",
-        color: "#fff",
-        border: "none",
-        padding: "7px 18px",
-        borderRadius: "8px",
-        fontWeight: "bold",
-        cursor: "pointer"
-      }}
-    >
-      Limpiar firma
-    </button>
-  </div>
-</div>
+          <div>
+            <p><strong>Firma de jefe de tienda o responsable:</strong></p>
+            <SignatureCanvas
+              ref={firmaClienteRef}
+              penColor="black"
+              canvasProps={{
+                width: 250,
+                height: 100,
+                className: "sigCanvas",
+                style: { border: "1px solid #000" },
+              }}
+            />
+          </div>
+        </div>
 
         <button
           onClick={generarPDF}
